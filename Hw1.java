@@ -176,7 +176,6 @@ public static boolean isWhiteEnough(Color c) {
          for(int x = 0; x < fbEWidth; ++x)
          {
             final Color c = fbEmbedded.getPixelFB(x, y);
-
             if(isWhiteEnough(c) == false) {
                vp3.setPixelVP(x, fbEWidth - 1 - y, c);
             }
@@ -184,16 +183,59 @@ public static boolean isWhiteEnough(Color c) {
       }
 
       //  8. Create another viewport put in it another flipped copy of the 1st ppm file.
-      // Here
+      final FrameBuffer.Viewport vp4 = fb.new Viewport(385, 175, fbEmbedded.getWidthFB(), fbEmbedded.getHeightFB());
+      for(int i = 0; i < fbEWidth; i++) {
+         for(int j = 0; j < fbEHeight; j++) {
+               Color c = fbEmbedded.getPixelFB(fbEWidth-1-i, j);
+               if (isWhiteEnough(c) == false) {
+                  vp4.setPixelVP(i, j, c);
+               }
+         }
+      }
       //  9. Create a viewport that covers the 6 checkerboard squares that need to be copied.
+      final FrameBuffer.Viewport vb5 = fb.new Viewport(800, 100, 200, 300);
+      // 550 250
+      for(int i = 0; i < 200; i++) {
+         for(int j = 0; j < 300; j++) {
+            Color c = fb.getPixelFB(550+i, 250+j);
+            vb5.setPixelVP(i, j, c);
+         }
+      }
       // 10. Create another viewport to hold a "framed" copy of the previous viewport.
       //     Give this viewport a grayish background color.
+      final FrameBuffer.Viewport vb6 = fb.new Viewport(775, 75, 250, 350, Color.GRAY);
+      for(int i = 0; i < 250; i++) {
+         for(int j = 0; j < 350; j++) {
+            if (i < 25 || i > 224 || j < 25 || j > 324) {
+               vb6.setPixelVP(i, j, Color.GRAY);
+            }
+         }
+      }
+      for(int i = 0; i < 200; i++) {
+         for(int j = 0; j < 300; j++) {
+               Color c = vb5.getPixelVP(i, j);
+               vb6.setPixelVP(25+i, 25+j, c);
+         }
+      }
       // 11. Create another viewport within the last, gray viewport, and initialize
       //     it to hold a copy of the viewport from step 9.
       // 12. Load Dumbledore (the 2nd ppm file) into another FrameBuffer.
+      FrameBuffer dumbledoreFB = new FrameBuffer(file_2);
       // 13. Create a viewport to hold Dumbledore's ghost.
+      final FrameBuffer.Viewport dumbledoreVP = fb.new Viewport(450, 150, dumbledoreFB.getWidthFB(), dumbledoreFB.getHeightFB());
       // 14. Blend Dumbledore from its framebuffer into the viewport.
-
+      for(int i = 0; i < dumbledoreFB.getWidthFB(); i++) {
+         for(int j = 0; j < dumbledoreFB.getHeightFB(); j++) {
+            Color c = dumbledoreFB.getPixelFB(i, j);
+            Color c2 = dumbledoreVP.getPixelVP(i, j);
+            Color new_red = new Color(0, 0, 0);
+            Color new_green = new Color(0, 0, 0);
+            Color new_blue = new Color(0, 0, 0);
+            if (isWhiteEnough(c) == false) {
+               dumbledoreVP.setPixelVP(i, j, c);
+            }
+         }
+      }
 
 
        // Save the resulting image in a file.
