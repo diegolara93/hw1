@@ -184,6 +184,7 @@ public static boolean isWhiteEnough(Color c) {
       }
 
       //  8. Create another viewport put in it another flipped copy of the 1st ppm file.
+      // Here
       //  9. Create a viewport that covers the 6 checkerboard squares that need to be copied.
       // 10. Create another viewport to hold a "framed" copy of the previous viewport.
       //     Give this viewport a grayish background color.
