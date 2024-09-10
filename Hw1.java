@@ -18,9 +18,7 @@ import java.io.IOException;
 public class Hw1
 {
    public static int distance(int x1, int y1, int x2, int y2) {
-      int distance = 0;
-      distance = (int) Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
-      return distance;
+      return (int) Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
    }
    public static void drawCheckBoard(FrameBuffer fb, int y, int width, Color checkerColor, int leadingColor) {
       if (leadingColor == 0) {
@@ -105,15 +103,6 @@ public static boolean isWhiteEnough(Color c) {
       drawCheckBoard(fb, 450, width, checkerColor, 0);
       drawCheckBoard(fb, 550, width, checkerColor, 1);
       //  3. Put a one pixel wide border around the checkerboard.
-      /*
-      ********************************************************************
-      ********************************************************************
-      ********************************************************************
-      // REMINDER : FIX THIS HORRENDOUS MESS OF FOR LOOPS INTO FUNCTIONS
-      ********************************************************************
-      ********************************************************************
-      ********************************************************************
-      */
       for (int i = 50; i < width - 50; i++) {
          fb.setPixelFB(i, 49, checkerColor);
       }
@@ -137,11 +126,10 @@ public static boolean isWhiteEnough(Color c) {
          fb.setPixelFB(i, height - i - 1, checkerColor);
       }
       for (int i = 0; i < 50; i++) {
-         fb.setPixelFB(width - i, i, checkerColor);
+         fb.setPixelFB(width - i-1, i, checkerColor);
       }
 
       //  5. Create a viewport and put in it the striped pattern.
-      // Pink green blue order
       Color pinkish = new Color(241, 95, 116);
       Color neonGreen = new Color(152, 203, 74);
       Color aquaBlue = new Color(84, 129, 230);
@@ -176,18 +164,18 @@ public static boolean isWhiteEnough(Color c) {
          for(int x = 0; x < fbEWidth; ++x)
          {
             final Color c = fbEmbedded.getPixelFB(x, y);
-            if(isWhiteEnough(c) == false) {
+            if(!isWhiteEnough(c)) {
                vp3.setPixelVP(x, fbEWidth - 1 - y, c);
             }
          }
       }
 
       //  8. Create another viewport put in it another flipped copy of the 1st ppm file.
-      final FrameBuffer.Viewport vp4 = fb.new Viewport(385, 175, fbEmbedded.getWidthFB(), fbEmbedded.getHeightFB());
+      final FrameBuffer.Viewport vp4 = fb.new Viewport(381, 175, fbEmbedded.getWidthFB(), fbEmbedded.getHeightFB());
       for(int i = 0; i < fbEWidth; i++) {
          for(int j = 0; j < fbEHeight; j++) {
                Color c = fbEmbedded.getPixelFB(fbEWidth-1-i, j);
-               if (isWhiteEnough(c) == false) {
+               if (!isWhiteEnough(c)) {
                   vp4.setPixelVP(i, j, c);
                }
          }
@@ -207,7 +195,7 @@ public static boolean isWhiteEnough(Color c) {
       for(int i = 0; i < 250; i++) {
          for(int j = 0; j < 350; j++) {
             if (i < 25 || i > 224 || j < 25 || j > 324) {
-               vb6.setPixelVP(i, j, Color.GRAY);
+               vb6.setPixelVP(i, j, new Color(192, 192, 192));
             }
          }
       }
@@ -220,19 +208,20 @@ public static boolean isWhiteEnough(Color c) {
       // 11. Create another viewport within the last, gray viewport, and initialize
       //     it to hold a copy of the viewport from step 9.
       // 12. Load Dumbledore (the 2nd ppm file) into another FrameBuffer.
-      FrameBuffer dumbledoreFB = new FrameBuffer(file_2);
+      final FrameBuffer dumbledoreFB = new FrameBuffer(file_2);
       // 13. Create a viewport to hold Dumbledore's ghost.
       final FrameBuffer.Viewport dumbledoreVP = fb.new Viewport(450, 150, dumbledoreFB.getWidthFB(), dumbledoreFB.getHeightFB());
       // 14. Blend Dumbledore from its framebuffer into the viewport.
       for(int i = 0; i < dumbledoreFB.getWidthFB(); i++) {
          for(int j = 0; j < dumbledoreFB.getHeightFB(); j++) {
             Color c = dumbledoreFB.getPixelFB(i, j);
-            Color c2 = dumbledoreVP.getPixelVP(i, j);
-            Color new_red = new Color(0, 0, 0);
-            Color new_green = new Color(0, 0, 0);
-            Color new_blue = new Color(0, 0, 0);
-            if (isWhiteEnough(c) == false) {
-               dumbledoreVP.setPixelVP(i, j, c);
+            if (!isWhiteEnough(c)) {
+               Color c2 = dumbledoreVP.getPixelVP(i, j);
+               int new_red = (int) (0.6 * c.getRed() + 0.4 * c2.getRed());
+               int new_green = (int) (0.6 * c.getGreen() + 0.4 * c2.getGreen());
+               int new_blue = (int) (0.6 * c.getBlue() + 0.4 * c2.getBlue());
+               Color newColor = new Color(new_red, new_green, new_blue);
+               dumbledoreVP.setPixelVP(i, j, newColor);
             }
          }
       }
